@@ -31,9 +31,11 @@ public class ShopController {
      * @param id 商铺id
      * @return 商铺详情数据
      */
+    //根据商铺id查询商铺，并将商铺写入redis缓存
     @GetMapping("/{id}")
     public Result queryShopById(@PathVariable("id") Long id) {
-        return Result.ok(shopService.getById(id));
+
+        return shopService.queryShopById(id);
     }
 
     /**

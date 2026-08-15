@@ -5,6 +5,7 @@
 - **Spring Boot 父版本**：`2.7.18`
 - **构建**：Maven（绝对路径 `E:\SDK\apache-maven-3.9.16\bin\mvn.cmd`，**PATH 里直接调 mvn 会找不到 launcher**）
 - **路径**：`E:/JAVA/Project/hm-dianping`
+- **前端项目路径**：`E:/JAVA/Project/web-front-hm-dianping/nginx-1.18.0/html/hmdp/`（Vue2 静态页，axios + element-ui，独立 git 仓库；`SystemConstants.IMAGE_UPLOAD_DIR` 里的 `D:\lesson\...` 是课程默认值，实际前端在 E 盘这里）
 - **Maven 镜像**：已配阿里云（alimaven），联网可用
 
 ## 关键依赖版本（已固化）

@@ -35,6 +35,8 @@ import static com.hmdp.utils.SystemConstants.USER_NICK_NAME_PREFIX;
 @Service
 public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IUserService {
 
+    ///为什么这两个没写@Resource或@Autowired
+    //因为事构造器注入方式
     private final StringRedisTemplate stringRedisTemplate;
     private final JwtUtils jwtUtils;
 
@@ -63,7 +65,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
         //session.setAttribute("code",code);
         //session.setAttribute("phone",phone);
 
-        // JWT->将验证码保存到mybatis中
+        // JWT->将验证码保存到redis中
         stringRedisTemplate.opsForValue().set(
                 RedisConstants.LOGIN_CODE_KEY + phone,
                 code,
@@ -132,22 +134,28 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
 
     @Override
     public Result refresh(String refreshToken) {
+        // 1. 解析并校验刷新令牌是否合法且未过期
         JwtUtils.JwtPayload payload = jwtUtils.parseAndVerify(refreshToken, JwtUtils.TYPE_REFRESH);
         if (payload == null) {
             return Result.fail("刷新令牌无效或已过期，请重新登录");
         }
+        // 2. 根据令牌中的 jti 查询 Redis 白名单，检查刷新令牌是否仍然有效
         String userIdStr = stringRedisTemplate.opsForValue().get(RedisConstants.LOGIN_REFRESH_KEY + payload.getJti());
         if (userIdStr == null) {
             return Result.fail("刷新令牌已失效，请重新登录");
         }
+        // 3. 根据用户 ID 查询用户是否存在
         User user = getById(Long.valueOf(userIdStr));
         if (user == null) {
             return Result.fail("用户不存在");
         }
+        // 4. 将 User 转为 UserDTO，隐藏敏感字段
         UserDTO userDTO = BeanUtil.copyProperties(user, UserDTO.class);
 
+        // 5. 删除旧的刷新令牌白名单记录，实现一次性使用，防止令牌被重复利用
         stringRedisTemplate.delete(RedisConstants.LOGIN_REFRESH_KEY + payload.getJti());
 
+        // 6. 签发新的双令牌（accessToken + refreshToken），实现令牌续期
         LoginResultDTO resultDTO = issueTokens(userDTO);
         return Result.ok(resultDTO);
     }
