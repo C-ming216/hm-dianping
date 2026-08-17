@@ -33,7 +33,7 @@ public class ShopController {
      */
     //根据商铺id查询商铺，并将商铺写入redis缓存
     @GetMapping("/{id}")
-    public Result queryShopById(@PathVariable("id") Long id) {
+    public Result queryShopById(@PathVariable("id") Long id) throws InterruptedException {
 
         return shopService.queryShopById(id);
     }
@@ -57,10 +57,11 @@ public class ShopController {
      * @return 无
      */
     @PutMapping
+    //下一步完成：将数据添加至数据库，再加入redis，添加事务锁
     public Result updateShop(@RequestBody Shop shop) {
         // 写入数据库
-        shopService.updateById(shop);
-        return Result.ok();
+
+        return shopService.update(shop);
     }
 
     /**

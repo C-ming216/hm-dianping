@@ -13,6 +13,7 @@ import javax.annotation.Resource;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+import static com.hmdp.utils.RedisConstants.CACHE_NULL_TTL;
 import static com.hmdp.utils.RedisConstants.SHOP_LIST_TYPE;
 import static com.hmdp.utils.RedisConstants.SHOP_LIST_TYPE_TTL;
 
@@ -28,7 +29,7 @@ import static com.hmdp.utils.RedisConstants.SHOP_LIST_TYPE_TTL;
 public class ShopTypeServiceImpl extends ServiceImpl<ShopTypeMapper, ShopType> implements IShopTypeService {
 
     @Resource
-    StringRedisTemplate stringRedisTemplate;
+    private StringRedisTemplate stringRedisTemplate;
     @Override
     public List<ShopType> queryShopType() {
         //1.查询商户类型是否在redis中
@@ -38,9 +39,12 @@ public class ShopTypeServiceImpl extends ServiceImpl<ShopTypeMapper, ShopType> i
         }
         //2.不存在则从数据库中查询
         List<ShopType> typeList = query().orderByAsc("sort").list();
-        //查询出的数据添加进缓存
-        stringRedisTemplate.opsForValue().set(SHOP_LIST_TYPE,JSONUtil.toJsonStr(typeList),SHOP_LIST_TYPE_TTL, TimeUnit.MINUTES);
-
+        //3.写入缓存：空列表 → 存 "[]"，TTL 短（2 分钟）防穿透；有数据 → 正常 TTL（30 分钟）
+        if (typeList == null || typeList.isEmpty()) {
+            stringRedisTemplate.opsForValue().set(SHOP_LIST_TYPE, "[]", CACHE_NULL_TTL, TimeUnit.MINUTES);
+        } else {
+            stringRedisTemplate.opsForValue().set(SHOP_LIST_TYPE, JSONUtil.toJsonStr(typeList), SHOP_LIST_TYPE_TTL, TimeUnit.MINUTES);
+        }
         return typeList;
     }
 }
