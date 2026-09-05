@@ -21,7 +21,7 @@ public class MvConfig implements WebMvcConfigurer {
                         "/user/info/**",       // 查看用户详情
                         "/shop/**",            // 浏览商铺
                         "/shop-type/**",       // 商铺分类
-                        "/voucher/list/**",    // 优惠券列表
+                        "/voucher/**",         // 优惠券相关（列表/新增普通券/新增秒杀券）
                         "/blog/hot"            // 热门博客
                 );
     }

@@ -1,5 +1,8 @@
 # HM-DianPing 项目约定
 
+## 协作规则（2026-08-29 用户明确要求）
+- **未经用户明确指示，禁止修改代码**，只给回答和方案；用户说"帮我改/修改代码"后才动手
+
 ## 基础环境
 - **Java**：1.8（`<java.version>1.8</java.version>`）—— **系统实际安装的是 JDK 21**，但项目本身用 1.8 编译（`javax.annotation`/`javax.servlet` 是 Java EE 8 时代的写法，不能升 jakarta）
 - **Spring Boot 父版本**：`2.7.18`

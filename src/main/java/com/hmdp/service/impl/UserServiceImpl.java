@@ -36,7 +36,7 @@ import static com.hmdp.utils.SystemConstants.USER_NICK_NAME_PREFIX;
 public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IUserService {
 
     ///为什么这两个没写@Resource或@Autowired
-    //因为事构造器注入方式
+    //因为是构造器注入方式
     private final StringRedisTemplate stringRedisTemplate;
     private final JwtUtils jwtUtils;
 
