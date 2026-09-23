@@ -16,5 +16,9 @@ public interface IVoucherOrderService extends IService<VoucherOrder> {
 
     Result secKillVoucher(Long voucherId);
 
-    Result createVoucher(Long voucherId);
+    /**
+     * 异步落库：由 Stream 消费线程调用，userId 从消息体（voucherOrder）中获取，
+     * 不能用 UserHolder（异步线程无 ThreadLocal）
+     */
+    Result createVoucher(VoucherOrder voucherOrder);
 }
